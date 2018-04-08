@@ -1,0 +1,53 @@
+$breakpoints = { xs: 0px, sm: 600px, md: 960px, lg: 1280px, xl: 1920px }
+$container-widths = { md: 90%, lg: 80%, xl: 70% }
+$grid-cols = 12
+$gutter-width = 16px
+
+breaks-up($viewport)
+  if $breakpoints[$viewport]
+    @media only screen and (min-width ($breakpoints[$viewport] + 1))
+      {block}
+
+breaks-down($viewport)
+  if $breakpoints[$viewport]
+    @media only screen and (max-width $breakpoints[$viewport])
+      {block}
+
+columns(size)
+  for i in (1..$grid-cols)
+    &.{size}{i}
+      padding 0 ($gutter-width / 2)
+      width percentage(i/$grid-cols)
+
+make-columns()
+  for viewport, size in $breakpoints
+    +breaks-up(viewport)
+      columns(viewport)
+
+.container, .container-fluid
+  position relative
+  padding 0 ($gutter-width / 2)
+
+.container
+  margin 0 auto
+  max-width 100%
+  for viewport, size in $container-widths
+    +breaks-up(viewport) { max-width size }
+
+.container-fluid
+  max-width 100%
+
+.grid
+  display flex
+  &.row
+    flex-direction row
+    &.reverse
+      flex-direction row-reverse
+  &.column
+    flex-direction column
+    &.reverse
+      flex-direction column-reverse
+  &.wrap
+    flex-wrap wrap
+  .column
+    make-columns()
